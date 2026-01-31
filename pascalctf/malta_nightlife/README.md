@@ -48,4 +48,4 @@ heck out the full exploit script here: [exploit.py](./exploit.py)
 ## 5.Result 
 
 ![PoC](./screenshot.jpg)
-*Payload delivered. Shell popped. Mission accomplished.*
+
