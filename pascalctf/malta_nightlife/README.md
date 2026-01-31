@@ -41,8 +41,11 @@ The flaw is a **Signedness Bug**. The variables are stored as unsigned integers,
 ## 4. Exploit Script
 The exploit was written using the `pwntools` library in Python.
 
+heck out the full exploit script here: [exploit.py](./exploit.py)
+
+---
 
 ## 5.Result 
-# 0x06: Result
+
 ![PoC](./screenshot.jpg)
 *Payload delivered. Shell popped. Mission accomplished.*
