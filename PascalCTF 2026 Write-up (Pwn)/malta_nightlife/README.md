@@ -1,51 +1,33 @@
-# Malta Nightlife - PascalCTF 2026 Write-up (Pwn)
+# Malta Nightlife - PascalCTF 2026
 
-A detailed walkthrough of the **Malta Nightlife** challenge from PascalCTF. This challenge involves an **Integer Overflow** vulnerability that allows a user to bypass financial logic and retrieve a hidden flag.
+This was a classic bank-breaking challenge. You start with 100€, but the flag "drink" costs a billion. Obviously, we aren't going to earn that much legitimately.
 
-## 1. Challenge Overview
-* **Category:** Pwn
-* **Difficulty:** Medium/Easy
-* **Description:** A simple drink ordering system where you start with 100€. The goal is to buy the "Flag" drink which costs 1,000,000,000€.
+### The Logic
+Checking the binary in **Ghidra**, I saw that:
+* The flag is loaded into the description of the 10th drink (index 9) at startup.
+* To see that description, you actually have to buy the drink.
+* Price: `1,000,000,000€`. My wallet: `100€`.
 
-## 2. Analysis
+### The Bug: Integer Overflow
+The vulnerability is in the cost calculation. The program uses signed 32-bit integers for the check:
+`if ((int)balance < (int)(quantity * price))`
 
-### Static Analysis (Ghidra)
-Upon decompiling the binary, we find two key functions:
+The max value for a signed 32-bit int is about **2.14 billion**. If you go over that, the number "wraps around" and becomes negative. 
 
-1.  **`init()` Function:**
-    * It fetches the flag from the system environment variable `FLAG`.
-    * It stores the flag pointer at an offset of `0x48` (72 bytes) within the descriptions array.
-    * In a 64-bit binary, this points exactly to the description of the **10th drink** (index 9).
+### Exploitation
+I needed the total cost to exceed 2.14 billion to trigger the flip.
+1. I ordered **3 units** of the Flag drink. 
+2. `3 * 1,000,000,000 = 3,000,000,000`.
+3. In signed integer terms, 3 billion overflows and becomes **-1.29 billion**.
+4. Since `100 < -1,290,000,000` is false, the program thinks I'm rich enough and lets the transaction slide.
 
-2.  **`main()` Function:**
-    * The program stores drink prices in an array where the 10th item is set to `1,000,000,000`.
-    * **The Vulnerability:** The budget check uses a signed integer cast during comparison:
-      ```c
-      if ((int)balance < (int)(quantity * price))
-      ```
+Actually, subtracting a negative number from my balance gave me billions in credits. Absolute win.
 
-### The Vulnerability: Integer Overflow
-The flaw is a **Signedness Bug**. The variables are stored as unsigned integers, but the check casts them to signed integers.
-* The maximum value for a 32-bit signed integer is `2,147,483,647`.
-* If we order **3 units** of the Flag drink: $3 \times 1,000,000,000 = 3,000,000,000$.
-* In 32-bit signed representation, `3,000,000,000` overflows and becomes a **negative number** (~ -1.29 billion).
-* Since `100 < [Negative Number]` is **False**, the check passes, and the program subtracts a negative cost from your balance, effectively giving you billions in credits.
+### Getting the Flag
+With my new infinite balance, I just bought 1 unit of drink #10. The program printed the "secret recipe," which was the flag.
 
+**The Strategy:**
+* **Step 1:** Order 3 of drink #10 (Overflow the cost to get infinite money).
+* **Step 2:** Order 1 of drink #10 (Buy it for real to read the flag).
 
-
-## 3. Exploitation Steps
-1.  **Trigger Overflow:** Order 3 units of drink #10. This overflows the cost calculation and increases your balance.
-2.  **Purchase Flag:** Now that you have a massive balance, order 1 unit of drink #10.
-3.  **Retrieve Flag:** The program prints the "secret recipe" for drink #10, which the `init()` function previously replaced with the actual flag.
-
-## 4. Exploit Script
-The exploit was written using the `pwntools` library in Python.
-
-heck out the full exploit script here: [exploit.py](./exploit.py)
-
----
-
-## 5.Result 
-
-![PoC](./screenshot.jpg)
-
+**Flag caught.** 🚩
