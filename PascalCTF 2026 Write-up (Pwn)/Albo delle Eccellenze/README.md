@@ -1,42 +1,18 @@
-# Writeup: Albo delle Eccellenze (PascalCTF 2026)
-### Category: Reverse Engineering / Pwn
+# Albo delle Eccellenze (Writeup)
 
-## 📝 Challenge Overview
-The challenge presents a binary that validates the personal data of a specific CTF player (Name, Surname, DOB, etc.) to grant access to a flag. While it is categorized as a **Reverse Engineering** task, the solution was achieved by identifying and exploiting a memory corruption vulnerability, typical of the **Pwn** category.
+This challenge was tagged as Reverse, but honestly, it was a pretty straightforward Pwn.
 
-* **Target**: `nc albo.ctf.pascalctf.it 7004`
-* **Tools Used**: Ghidra, Python, Netcat.
+### What's going on?
+I tossed the binary into Ghidra and checked out the main logic in `FUN_004024e4`. It asks for some personal info to generate a "Codice Fiscale." The program then checks your input against a hardcoded string: `Al1D612LPSCBLS37`.
 
----
+The funny part? The logic is flipped. If the check fails (meaning `cVar1` is NOT 1), it triggers the flag function. So, we basically just need to break the comparison.
 
-## 🔍 Phase 1: Reverse Engineering (Static Analysis)
-Initial analysis in **Ghidra** revealed the following:
+### The Vulnerability
+The input function `FUN_004159c0` is broken. It reads way more than it should (up to 100 bytes) into buffers that are much smaller. Since the control variable `cVar1` is sitting right there on the stack after our input, it's a classic Buffer Overflow.
 
-1.  **Entry Point**: The `entry` function calls the main logic handler at `FUN_004024e4`.
-2.  **Logic Flow**: The program prompts for multiple strings including Name, Surname, Date of Birth, and Place of Birth.
-3.  **The Validator**: It processes these inputs to generate a "Codice Fiscale" and compares it against the hardcoded string `"Al1D612LPSCBLS37"` in function `FUN_004023eb`.
-4.  **The Gatekeeper**: A variable `cVar1` stores the result of this check. If `cVar1` is NOT `1`, the program calls `FUN_00402311`, which reads the flag from the server.
+### The Lazy Solve
+Why bother reversing the algorithm when you can just smash the stack? I sent 600 "A"s to overflow everything, overwrite the control variable, and force the program to jump to the flag.
 
----
-
-## 🛠 Phase 2: Finding the Shortcut (The Pwn Approach)
-While analyzing the stack layout in Ghidra, I identified a classic **Buffer Overflow** opportunity.
-
-* **Vulnerability**: The input function `FUN_004159c0` reads up to 100 bytes into buffers that are adjacent to critical control variables on the stack.
-* **Memory Layout**: The critical variable `cVar1` (the conditional flag) is located at a higher memory address than the input buffers `local_208` and `local_1a4`.
-* **Strategy**: By providing an excessively long input, I could overwrite `cVar1` with arbitrary data, successfully bypassing the "Codice Fiscale" check regardless of the actual data entered.
-
-
-
----
-
-## 🚀 Phase 3: Exploitation
-I crafted a payload consisting of 300 "A" characters to ensure the stack was sufficiently smashed to reach and overwrite `cVar1`.
-
-### Execution:
+**The Exploit:**
 ```bash
 python3 -c 'print("A"*600)' | nc albo.ctf.pascalctf.it 7004
-```
-## Result:
-
-![PoC](./screenshotreverse.png)
