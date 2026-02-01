@@ -19,9 +19,8 @@ python3 -c 'print("A"*600)' | nc albo.ctf.pascalctf.it 7004
 
 ```
 ### Result: 
+)
 
-heck out the full exploit script here: [exploit.py](./exploit.py)
 
-
-![PoC](./screenshot.jpg)
+![PoC](./screenshotrevers.jpg)
 
