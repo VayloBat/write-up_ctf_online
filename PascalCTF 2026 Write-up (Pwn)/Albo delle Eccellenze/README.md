@@ -22,5 +22,5 @@ python3 -c 'print("A"*600)' | nc albo.ctf.pascalctf.it 7004
 )
 
 
-![PoC](./screenshotreverse.jpg)
+![PoC](./screenshotreverse.png)
 
