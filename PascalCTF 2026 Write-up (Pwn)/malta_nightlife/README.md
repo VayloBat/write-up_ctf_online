@@ -30,4 +30,13 @@ With my new infinite balance, I just bought 1 unit of drink #10. The program pri
 * **Step 1:** Order 3 of drink #10 (Overflow the cost to get infinite money).
 * **Step 2:** Order 1 of drink #10 (Buy it for real to read the flag).
 
+###Result:
+
+heck out the full exploit script here: [exploit.py](./exploit.py)
+
+
+![PoC](./screenshot.jpg)
+
+
+
 **Flag caught.** 🚩
